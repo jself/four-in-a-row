@@ -21,10 +21,12 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import GameGridHook from "./game-grid-hook.js"
+import CopyLinkHook from "./copy-link-hook.js"
 import topbar from "../vendor/topbar"
 
 let Hooks = {
-    GameGridHook: GameGridHook
+    GameGridHook: GameGridHook,
+    CopyLinkHook: CopyLinkHook,
 }
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")

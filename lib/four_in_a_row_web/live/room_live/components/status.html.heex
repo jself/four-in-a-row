@@ -1,4 +1,7 @@
-<div class="text-lg text-center grow">
+<div class={[" text-lg md:text-xl lg:text-3xl text-center grow",
+     if(@turn, do: "text-blue-500", else: "text-gray-400")
+     ]
+  }>
   <%= if @turn do %>
     It's your turn!
   <% else %>

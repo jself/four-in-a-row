@@ -9,7 +9,7 @@ defmodule FourInARowWeb.RoomLive do
 
   @impl true
   def mount(%{"room_id" => room_id}, _session, socket) do
-    if connected?(socket) do
+    socket = if connected?(socket) do
       # generate a player id and find connected users
       player_id = gen_player_id()
       user_ids = connected_users(room_id)
@@ -26,36 +26,31 @@ defmodule FourInARowWeb.RoomLive do
         # update it since we're now tracking
         user_ids = connected_users(room_id)
 
-        {:ok,
-         socket
-         |> assign(player_id: player_id)
-         |> assign(room_id: room_id)
-         |> assign(game: Game.new_board())
-         |> assign(connected: true)
-         |> assign(connected_users: user_ids)
-         |> assign(turn: nil)
-         |> assign(game_over: false)
-       |> assign(i_won: false)
-         |> assign_state()}
+        socket
+        |> assign(player_id: player_id)
+        |> assign(connected: true)
+        |> assign(connected_users: user_ids)
+        |> assign_state()
       else
-        {:ok,
-         socket
-         |> put_flash(:error, "This room is full. Returning you to the lobby")
-         |> push_navigate(to: ~p"/")}
+        socket
+        |> put_flash(:error, "This room is full. Returning you to the lobby")
+        |> push_navigate(to: ~p"/")
       end
     else
       # This is the server generated view, need to wait for connected users
-      {:ok,
-       socket
-       |> assign(room_id: room_id)
-       |> assign(game: Game.new_board())
-       |> assign(connected: false)
-       |> assign(connected_users: [])
-       |> assign(turn: nil)
-       |> assign(game_over: false)
-       |> assign(i_won: false)
-       |> assign_state()}
+      socket
+      |> assign(connected: false)
+      |> assign(connected_users: [])
+      |> assign_state()
     end
+    {:ok, socket 
+    |> assign(room_id: room_id)
+    |> assign(game: Game.new_board())
+    |> assign(turn: nil)
+    |> assign(game_over: false)
+    |> assign(i_won: false)
+    |> assign(room_link: url(~p"/room/#{room_id}"))
+    }
   end
 
   defp connected_users(room_id) do
@@ -113,12 +108,16 @@ defmodule FourInARowWeb.RoomLive do
     # update the connected users
     user_ids = connected_users(socket.assigns.room_id)
 
-    {:noreply,
-     socket
-     |> assign(connected_users: user_ids)
-     |> assign(game: Game.new_board())
-     |> assign(game_over: false)
-     |> assign_state()}
+    if socket.assigns.game_over do
+      {:noreply, socket}
+    else
+      {:noreply,
+        socket
+        |> assign(connected_users: user_ids)
+        |> assign(game: Game.new_board())
+        |> assign(game_over: false)
+        |> assign_state()}
+    end
   end
 
   @impl true
