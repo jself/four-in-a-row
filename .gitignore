@@ -35,3 +35,6 @@ four_in_a_row-*.tar
 npm-debug.log
 /assets/node_modules/
 
+fly.toml
+Dockerfile
+rel/
