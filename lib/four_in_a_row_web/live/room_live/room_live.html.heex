@@ -1,11 +1,11 @@
-<div class="flex justify-center" id="game-grid-wrapper">
+<div class="flex justify-center overflow-hidden" id="game-grid-wrapper">
   <%= case @state do %>
     <% "waiting" -> %>
-      <div class="flex flex-col justify-center h-screen w-full sm:w-2/3">
+      <div class="flex flex-col justify-center min-h-[calc(100svh_-_88px)] w-full sm:w-2/3">
         <div class="flex flex-col gap-6 bg-white p-6 rounded-2xl w-full">
           <div class="text-2xl font-semibold">Waiting for another player.</div>
           <div>Invite someone else to this room:</div>
-          <div class="flex flex-col md:flex-row gap-2 md:gap-0 h-[50px]">
+          <div class="flex flex-col md:flex-row gap-2 md:gap-0 md:h-[50px]">
             <div class="h-full grow">
             <input 
               id="room-link" 
@@ -24,7 +24,7 @@
               >Copy</button>
           </div>
 
-          <.link href="/" class="cursor-pointer text-lg text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl shadow-lg">
+          <.link navigate="/" class="cursor-pointer text-lg text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl shadow-lg">
           Return to Lobby
           </.link>
         </div>
@@ -32,14 +32,12 @@
     <% "playing" -> %>
       <div 
         id="game-grid" 
-        class="flex flex-col gap-6 w-full justify-center h-screen items-center" 
+        class="flex flex-col gap-6 w-full justify-center items-center min-h-[calc(100svh_-_88px)]" 
         phx-hook="GameGridHook"
         data-my-turn={if(@turn == @player_id, do: "true", else: "false")}
         >
         <div class="bg-white md:shadow-lg p-12 rounded-lg flex flex-col gap-6">
-          <div class="flex flex-row justify-between w-full">
-            <.status turn={@turn == @player_id}/>
-          </div>
+          <div class="_staging flex flex-row w-full h-[20px] md:h-[40px] lg:h-[48px]"></div>
           <div class="_grid grid grid-cols-7 grid-rows-6">
             <%= for {row, y} <- Enum.with_index(@game) do %>
               <%= for {cell, x} <- Enum.with_index(row) do %>
@@ -47,17 +45,21 @@
               <% end %>
             <% end %>
           </div>
+
+          <div class="flex flex-row justify-between w-full">
+            <.status turn={@turn == @player_id}/>
+          </div>
           <div class="flex flex-row justify-between">
 
             <%= if @player1 == @player_id do %>
-              <.you align={"text-left"}/>
+              <.you align={"text-left"} turn={@turn} player={@player1}/>
             <% else %>
-              <.opponent name="Player 1" align={"text-left"}/>
+              <.opponent name="Player 1" align={"text-left"} turn={@turn} player={@player1}/>
             <% end %>
             <%= if @player2 == @player_id do %>
-              <.you align={"text-right"}/>
+              <.you align={"text-right"} turn={@turn} player={@player2}/>
             <% else %>
-              <.opponent name="Player 2" align={"text-right"}/>
+              <.opponent name="Player 2" turn={@turn} player={@player2} align={"text-right"}/>
             <% end %>
           </div>
         </div>
@@ -71,13 +73,16 @@
    on_cancel={JS.patch(~p"/")}
  >
  <h1 class="text-2xl w-full text-center">Game Over!</h1>
- <%= if @i_won do %>
-   <div class="text-3xl w-full text-center mt-4">You won!</div>
- <% else %>
-   <div class="text-3xl w-full text-center mt-4">You lost!</div>
+ <%= cond do %>
+   <% @tie == true -> %>
+     <div class="text-3xl w-full text-center mt-4">It was a tie!</div>
+   <% @i_won == true -> %>
+     <div class="text-3xl w-full text-center mt-4">You won!</div>
+    <% true -> %>
+     <div class="text-3xl w-full text-center mt-4">You lost!</div>
  <% end %>
  <div class="flex flex-row justify-center gap-6 mt-6">
-   <.link href="/" class="cursor-pointer text-lg text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl shadow-lg">
+   <.link navigate="/" class="cursor-pointer text-lg text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-2xl shadow-lg">
      Return to Lobby
    </.link>
  </div>

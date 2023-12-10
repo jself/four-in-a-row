@@ -60,6 +60,7 @@ defmodule FourInARow.GameTest do
     # test we can win diagonally
     board = Game.update_position(board, {0, 3}, 1)
     |> Game.update_position({1, 2}, 1)
+    dbg(board)
 
     assert(Game.check_win(board) == nil)
 
@@ -87,5 +88,17 @@ defmodule FourInARow.GameTest do
     {:error, :no_space} = Game.drop_token(board, 3, 1)
     assert Game.get_position(board, {3, 0}) == 1
     assert Game.get_position(board, {3, 5}) == 1
+  end
+
+  test "check_tie" do
+    board = [
+      [1, 2, 1, 2, 1, 2, 1],
+      [1, 2, 1, 2, 1, 2, 1],
+      [2, 1, 2, 1, 2, 1, 2],
+      [2, 1, 2, 1, 2, 1, 2],
+      [1, 2, 1, 2, 1, 2, 1],
+      [1, 2, 1, 2, 1, 2, 1],
+    ]
+    assert Game.check_win(board) == {:tie}
   end
 end

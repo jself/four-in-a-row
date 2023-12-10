@@ -1,10 +1,12 @@
-<header class="flex flex-row justify-center bg-cyan-900 text-white py-6" style="font-family: 'Permanent Marker', cursive;">
+<div class="h-screen">
+  <header class="flex flex-row justify-center bg-cyan-900 text-white py-6" style="font-family: 'Permanent Marker', cursive;">
 
-  <div class="text-4xl">Four In A Row</div>
-</header>
-<main class="bg-gray-300">
-  <div class="mx-auto max-w-3xl">
-    <.flash_group flash={@flash} />
-    <%= @inner_content %>
-  </div>
-</main>
+    <div class="text-4xl">Four In A Row</div>
+  </header>
+  <main class="bg-gray-300">
+    <div class="mx-auto max-w-3xl">
+      <.flash_group flash={@flash} />
+      <%= @inner_content %>
+    </div>
+  </main>
+</div>

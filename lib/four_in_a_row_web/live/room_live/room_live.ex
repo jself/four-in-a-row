@@ -45,12 +45,18 @@ defmodule FourInARowWeb.RoomLive do
     end
     {:ok, socket 
     |> assign(room_id: room_id)
-    |> assign(game: Game.new_board())
-    |> assign(turn: nil)
-    |> assign(game_over: false)
-    |> assign(i_won: false)
+    |> reset_board()
     |> assign(room_link: url(~p"/room/#{room_id}"))
     }
+  end
+
+  defp reset_board(socket) do
+    socket
+    |> assign(game: Game.new_board())
+    |> assign(game_over: false)
+    |> assign(tie: false)
+    |> assign(i_won: false)
+    |> assign(turn: nil)
   end
 
   defp connected_users(room_id) do
@@ -114,8 +120,7 @@ defmodule FourInARowWeb.RoomLive do
       {:noreply,
         socket
         |> assign(connected_users: user_ids)
-        |> assign(game: Game.new_board())
-        |> assign(game_over: false)
+        |> reset_board()
         |> assign_state()}
     end
   end
@@ -128,6 +133,12 @@ defmodule FourInARowWeb.RoomLive do
          socket
          |> assign(game: game)
          |> assign(turn: turn)
+        }
+      {:tie} -> 
+        {:noreply,
+         socket
+         |> assign(game_over: true)
+         |> assign(tie: true)
         }
       {:won, player} ->
         {:noreply,

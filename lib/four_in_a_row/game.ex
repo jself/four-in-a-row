@@ -44,13 +44,30 @@ defmodule FourInARow.Game do
     end
   end
 
+  def check_tie(board) do
+    #checks if there are no open spaces on the board   
+    count = Enum.flat_map(0..5, fn y -> 
+      Enum.map(0..6, fn x -> 
+        get_position(board, {x, y}) == 0
+      end)
+    end)
+    |> Enum.count(fn val -> val == true end)
+    |> dbg()
+
+    if count == 0 do 
+      {:tie}
+    else 
+      nil
+    end
+  end
+
   def check_win(board) do
     # iterate each square and look for a win
     # this could be more efficient by only checking possible combinations, but checking everything for now
 
     # iterate each row
     # iterate each column
-    Enum.flat_map(0..5, fn y ->
+    win = Enum.flat_map(0..5, fn y ->
       Enum.map(0..6, fn x ->
         check_win(board, {x, y})
       end)
@@ -61,6 +78,12 @@ defmodule FourInARow.Game do
         win -> win
       end
     end)
+
+    case win do
+      false -> check_tie(board)
+      nil -> check_tie(board)
+      win -> win
+    end
   end
 
   def check_win(board, {x, y}) do
