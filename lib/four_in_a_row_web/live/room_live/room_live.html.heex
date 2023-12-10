@@ -1,0 +1,59 @@
+<div class="flex justify-center" id="game-grid-wrapper">
+  <%= case @state do %>
+    <% "waiting" -> %>
+      <div class="flex flex-col justify-center h-screen">
+        <div class="bg-white text-2xl p-6 shadow-lg rounded-2xl">Waiting for another player.</div>
+      </div>
+    <% "playing" -> %>
+      <div 
+        id="game-grid" 
+        class="flex flex-col gap-6 w-full justify-center h-screen items-center" 
+        phx-hook="GameGridHook"
+        data-my-turn={if(@turn == @player_id, do: "true", else: "false")}
+        >
+        <div class="bg-white p-12 rounded-lg flex flex-col gap-6">
+          <div class="flex flex-row justify-between w-full">
+            <.status turn={@turn == @player_id}/>
+          </div>
+          <div class="_grid grid grid-cols-7 grid-rows-6">
+            <%= for {row, y} <- Enum.with_index(@game) do %>
+              <%= for {cell, x} <- Enum.with_index(row) do %>
+                <.cell y={y} x={x} me={cell_value(x, y, @game) == player_number(assigns)} val={cell_value(x, y, @game)}/>
+              <% end %>
+            <% end %>
+          </div>
+          <div class="flex flex-row justify-between">
+
+            <%= if @player1 == @player_id do %>
+              <.you align={"text-left"}/>
+            <% else %>
+              <.opponent name="Player 1" align={"text-left"}/>
+            <% end %>
+            <%= if @player2 == @player_id do %>
+              <.you align={"text-right"}/>
+            <% else %>
+              <.opponent name="Player 2" align={"text-right"}/>
+            <% end %>
+          </div>
+        </div>
+      </div>
+  <% end %>
+</div>
+<.modal
+   id="game-over-modal"
+   show
+   :if={@game_over}
+   on_cancel={JS.patch(~p"/")}
+ >
+ <h1 class="text-2xl w-full text-center">Game Over!</h1>
+ <%= if @i_won do %>
+   <div class="text-3xl w-full text-center mt-4">You won!</div>
+ <% else %>
+   <div class="text-3xl w-full text-center mt-4">You lost!</div>
+ <% end %>
+ <div class="flex flex-row justify-center gap-6 mt-6">
+   <.link href="/" class="cursor-pointer bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+   Play Again
+   </.link>
+ </div>
+ </.modal>

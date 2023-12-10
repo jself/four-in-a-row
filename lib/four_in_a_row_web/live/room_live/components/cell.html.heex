@@ -1,0 +1,15 @@
+<div class={[
+     "_cell p-2 m-1 z-[4] flex justify-center items-center",
+     "border-2"
+     ]} data-x={@x} data-y={@y}>
+  <%= case @val do %>
+    <% 0 -> %>
+      <div class="w-[48px] aspect-square pointer-events-none"></div>
+    <% _ -> %>
+      <%= if @me do %>
+        <div class="bg-blue-500 w-[48px] aspect-square rounded-full pointer-events-none"></div>
+      <% else %>
+        <div class="bg-orange-500 w-[48px] aspect-square rounded-full pointer-events-none"></div>
+      <% end %>
+  <% end %>
+</div>
