@@ -48,7 +48,7 @@ defmodule FourInARow.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:plug_cowboy, "~> 2.5"},
-      {:anonymous_name_generator, "~> 0.1"}
+      {:namor, "~> 1.0"},
     ]
   end
 

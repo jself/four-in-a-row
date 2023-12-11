@@ -54,9 +54,10 @@ defmodule FourInARowWeb.RoomLive do
     socket
     |> assign(game: Game.new_board())
     |> assign(game_over: false)
+    |> assign(show_game_over: false)
     |> assign(tie: false)
     |> assign(i_won: false)
-    |> assign(turn: nil)
+    |> assign(turn: socket.assigns[:player1])
   end
 
   defp connected_users(room_id) do
@@ -137,12 +138,14 @@ defmodule FourInARowWeb.RoomLive do
       {:tie} -> 
         {:noreply,
          socket
+         |> assign(show_game_over: true)
          |> assign(game_over: true)
          |> assign(tie: true)
         }
       {:won, player} ->
         {:noreply,
          socket
+         |> assign(show_game_over: true)
          |> assign(game_over: true)
          |> assign(i_won: player == player_number(socket.assigns))
         }
@@ -165,6 +168,17 @@ defmodule FourInARowWeb.RoomLive do
         {:noreply, socket
           |> put_flash(:error, "No space in that column")}
     end
+  end
+
+
+  @impl true
+  def handle_event("play-again", _params, socket) do
+    {:noreply, socket |> reset_board()}
+  end
+
+  @impl true
+  def handle_event("hide-game-over-modal", _params, socket) do
+    {:noreply, socket |> assign(show_game_over: false)}
   end
 
   defp gen_player_id() do
